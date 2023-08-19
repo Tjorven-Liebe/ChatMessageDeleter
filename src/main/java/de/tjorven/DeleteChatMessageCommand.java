@@ -1,5 +1,6 @@
 package de.tjorven;
 
+import de.tjorven.util.PacketLogger;
 import net.minecraft.network.chat.MessageSignature;
 import net.minecraft.network.protocol.game.ClientboundDeleteChatPacket;
 import org.bukkit.Bukkit;
@@ -13,11 +14,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class DeleteChatMessageCommand implements TabExecutor {
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        CraftPlayer player = (CraftPlayer) sender;
-//        MessageSignature messageSignature = PacketLogger.signatures.get(args[0]);
-        player.getHandle().connection.send(new ClientboundDeleteChatPacket(new MessageSignature.Packed(PacketLogger.signatures.get(args[0]))));
+        Bukkit.getOnlinePlayers().forEach(online -> ((CraftPlayer) online).getHandle().connection.send(new ClientboundDeleteChatPacket(new MessageSignature.Packed(PacketLogger.signatures.get(args[0])))));
         return false;
     }
 

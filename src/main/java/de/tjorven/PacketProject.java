@@ -1,21 +1,20 @@
 package de.tjorven;
 
-import net.minecraft.network.Connection;
-import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
+import de.tjorven.listener.ChatListener;
+import de.tjorven.listener.JoinListener;
+import de.tjorven.util.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PacketProject extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        for (Connection connection : ((CraftServer) getServer()).getServer().getConnection().getConnections()) {
-            connection.channel.pipeline().addBefore("packet_handler", "logger_" + System.currentTimeMillis(),  new PacketLogger());
-            connection.channel.pipeline().addBefore("timeout", "logger_" + System.currentTimeMillis(),  new PacketLogger());
-            connection.channel.pipeline().addBefore("haproxy-decoder", "logger_" + System.currentTimeMillis(),  new PacketLogger());
-            connection.channel.pipeline().addBefore("legacy_query", "logger_" + System.currentTimeMillis(),  new PacketLogger());
-        }
-        getServer().getPluginManager().registerEvents(new ChatListener(), this);
+        Bukkit.getOnlinePlayers().forEach(Util::inject);
+        PluginManager pluginManager = getServer().getPluginManager();
+        pluginManager.registerEvents(new ChatListener(), this);
+        pluginManager.registerEvents(new JoinListener(), this);
         getCommand("deletechatmessage").setExecutor(new DeleteChatMessageCommand());
-        getCommand("packet").setExecutor(new PacketCommand());
     }
 }
